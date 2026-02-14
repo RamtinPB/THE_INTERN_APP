@@ -74,6 +74,7 @@ export const signupWithPasswordOtp = async (
 	phoneNumber: string,
 	password: string,
 	otp: string,
+	userType: "CUSTOMER" | "BUSINESS" = "CUSTOMER",
 ) => {
 	// Business logic: validate user doesn't exist
 	const existingUser = await authRepository.findUserByPhoneNumber(phoneNumber);
@@ -84,7 +85,11 @@ export const signupWithPasswordOtp = async (
 
 	// Hash password and create user
 	const passwordHash = await hashPassword(password);
-	const newUser = await authRepository.createUser(phoneNumber, passwordHash);
+	const newUser = await authRepository.createUser(
+		phoneNumber,
+		passwordHash,
+		userType,
+	);
 
 	// Generate tokens
 	const accessToken = signAccessToken({

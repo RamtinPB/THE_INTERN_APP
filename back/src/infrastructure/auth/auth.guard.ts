@@ -12,7 +12,7 @@ export const requireAuth = async (ctx: any) => {
 	try {
 		const payload: any = verifyAccessToken(token);
 		// attach user info to context
-		ctx.user = { id: payload.userId, role: payload.role };
+		ctx.user = { id: payload.userId, userType: payload.userType };
 	} catch (error) {
 		ctx.set.status = 401;
 		return { error: "Invalid token" };

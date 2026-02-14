@@ -4,6 +4,7 @@ import cors from "@elysiajs/cors";
 import swagger from "@elysiajs/swagger";
 
 import { registerAuthRoutes } from "./modules/auth/auth.route";
+import { registerWalletRoutes } from "./modules/wallet/wallet.route";
 
 export const app = new Elysia()
 	.use(
@@ -37,6 +38,7 @@ export const app = new Elysia()
 	.get("/", () => ({ status: "ok", message: "Backend is running" }));
 
 registerAuthRoutes(app);
+registerWalletRoutes(app);
 
 app.listen(4000);
 

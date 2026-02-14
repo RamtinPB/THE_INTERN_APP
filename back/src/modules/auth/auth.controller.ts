@@ -11,7 +11,16 @@ const isProdMode = process.env.NODE_ENV === "production";
 export const requestOtp = async (ctx: any) => {
 	const body = await ctx.body;
 	const phoneNumber = body.phoneNumber;
-	const purpose = body.purpose; // could be 'login' or 'signup'
+	let purpose = body.purpose;
+
+	// Convert to uppercase for Prisma enum
+	if (purpose) {
+		purpose = purpose.toUpperCase() as
+			| "SIGNUP"
+			| "LOGIN"
+			| "VERIFY_TRANSACTION";
+	}
+
 	if (!phoneNumber) {
 		ctx.set.status = 400;
 		return { error: "Phone number is required" };
@@ -28,7 +37,7 @@ export const requestOtp = async (ctx: any) => {
 
 export const signup = async (ctx: any) => {
 	const body = await ctx.body;
-	const { phoneNumber, password, otp } = body || {};
+	const { phoneNumber, password, otp, userType } = body || {};
 	if (!phoneNumber || !password || !otp) {
 		ctx.set.status = 400;
 		return {
@@ -36,11 +45,15 @@ export const signup = async (ctx: any) => {
 		};
 	}
 
+	// Default to CUSTOMER if not provided
+	const userAccountType = userType === "BUSINESS" ? "BUSINESS" : "CUSTOMER";
+
 	try {
 		const created = await authService.signupWithPasswordOtp(
 			phoneNumber,
 			password,
 			otp,
+			userAccountType,
 		);
 
 		// Set refresh token in httpOnly cookie
@@ -179,7 +192,7 @@ export const me = async (ctx: any) => {
 
 		// For now, return the user info from the token
 		return {
-			user: { id: ctx.user.id, role: ctx.user.role },
+			user: { id: ctx.user.id, userType: ctx.user.userType },
 		};
 	} catch (error) {
 		ctx.set.status = 401;

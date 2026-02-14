@@ -9,9 +9,13 @@ export const findUserById = async (id: number) => {
 	return prisma.user.findUnique({ where: { id } });
 };
 
-export const createUser = async (phoneNumber: string, passwordHash: string) => {
+export const createUser = async (
+	phoneNumber: string,
+	passwordHash: string,
+	userType: "CUSTOMER" | "BUSINESS" = "CUSTOMER",
+) => {
 	return prisma.user.create({
-		data: { phoneNumber, passwordHash },
+		data: { phoneNumber, passwordHash, userType },
 	});
 };
 
@@ -28,7 +32,7 @@ export const createOTP = async (
 			phoneNumber,
 			codeHash,
 			expiresAt,
-			purpose, // Add this field
+			purpose,
 			userId: userId ?? null,
 		},
 	});

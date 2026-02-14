@@ -7,13 +7,7 @@ export function registerAuthRoutes(appInstance: typeof app) {
 	appInstance.post("/auth/request-otp", authController.requestOtp, {
 		body: t.Object({
 			phoneNumber: t.String(),
-			purpose: t.Optional(
-				t.Union([
-					t.Literal("login"),
-					t.Literal("signup"),
-					t.Literal("verifyTransaction"),
-				]),
-			),
+			purpose: t.Optional(t.String()), // Accept any string, controller converts to uppercase
 		}),
 	});
 	appInstance.post("/auth/signup", authController.signup, {
@@ -21,6 +15,9 @@ export function registerAuthRoutes(appInstance: typeof app) {
 			phoneNumber: t.String(),
 			password: t.String(),
 			otp: t.String(),
+			userType: t.Optional(
+				t.Union([t.Literal("CUSTOMER"), t.Literal("BUSINESS")]),
+			),
 		}),
 	});
 	appInstance.post("/auth/login", authController.login, {
