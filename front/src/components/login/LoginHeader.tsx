@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import RightArrowIcon from "../../../public/assets/header/right_arrow.svg";
+import { ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function LoginHeader() {
@@ -14,7 +14,7 @@ export function LoginHeader() {
 				className="h-8 w-8 p-0"
 				onClick={() => router.push("/")}
 			>
-				<RightArrowIcon className="w-fit! h-fit!" />
+				<ArrowRight className="w-fit! h-fit!" />
 			</Button>
 		</header>
 	);

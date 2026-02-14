@@ -46,7 +46,7 @@ export default function LoginPage() {
 	 * RENDER
 	 * ------------------------------------------------------------ */
 	return (
-		<>
+		<div dir="rtl" className="min-h-screen flex flex-col">
 			{/* HEADER */}
 			<LoginHeader />
 
@@ -166,6 +166,6 @@ export default function LoginPage() {
 					{error && <div className="mt-2 text-right text-red-600">{error}</div>}
 				</div>
 			</main>
-		</>
+		</div>
 	);
 }

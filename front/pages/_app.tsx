@@ -1,7 +1,8 @@
 import type { AppProps } from "next/app";
+import type { NextPage } from "next";
 import { AuthBootstrap } from "@/components/AuthBootstrap";
 import { ReactElement, ReactNode } from "react";
-import "@/app/globals.css";
+import "@/globals.css";
 
 export default function App({ Component, pageProps }: AppProps) {
 	const ComponentWithLayout = Component as NextPageWithLayout;
@@ -13,6 +14,6 @@ export default function App({ Component, pageProps }: AppProps) {
 	);
 }
 
-type NextPageWithLayout = {
+type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactElement) => ReactElement;
 };

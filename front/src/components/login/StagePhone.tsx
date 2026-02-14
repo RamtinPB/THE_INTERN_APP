@@ -7,9 +7,7 @@ import {
 	InputGroupInput,
 } from "@/components/ui/input-group";
 
-import PhoneIcon from "../../../public/assets/login/Phone.svg";
-import EyeIcon from "../../../public/assets/login/eye-solid-full.svg";
-import EyeSlashIcon from "../../../public/assets/login/eye-slash-regular-full.svg";
+import { Phone, Eye, EyeClosed } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { useState } from "react";
 
@@ -37,7 +35,7 @@ export function StagePhone({
 					/>
 				</InputGroup>
 				<InputGroupAddon className="rounded-r-xl w-[46px]! h-[46px]! p-2 bg-[#F7F7F7] border border-[#EDEDED]  group-focus-within:border-[#FF6A29] ">
-					<PhoneIcon className="w-fit! h-fit!" />
+					<Phone className="w-fit! h-fit!" />
 				</InputGroupAddon>
 			</div>
 
@@ -56,9 +54,9 @@ export function StagePhone({
 					onClick={() => setShowPassword(!showPassword)}
 				>
 					{showPassword ? (
-						<EyeIcon className="w-fit! h-fit! " />
+						<Eye className="w-fit! h-fit!" />
 					) : (
-						<EyeSlashIcon className="w-fit! h-fit!" />
+						<EyeClosed className="w-fit! h-fit!" />
 					)}
 				</Button>
 			</ButtonGroup>

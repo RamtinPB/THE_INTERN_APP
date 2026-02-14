@@ -1,8 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import ClockIcon from "../../../public/assets/login/clock.svg";
-import EditIcon from "../../../public/assets/login/edit.svg";
+import { Clock, Edit } from "lucide-react";
 
 export function LoginFooterOTP({
 	timeLeft,
@@ -16,7 +15,7 @@ export function LoginFooterOTP({
 	resend: () => void;
 }) {
 	return (
-		<div dir="ltr" className="flex justify-between items-center w-full mt-2">
+		<div dir="rtl" className="flex justify-between items-center w-full mt-2">
 			<Button
 				variant="ghost"
 				className="text-[#FF6A29] font-medium"
@@ -25,7 +24,7 @@ export function LoginFooterOTP({
 				<span className="text-[#787471] font-normal text-[16px]">
 					ویرایش شماره
 				</span>
-				<EditIcon className="w-fit! h-fit!" />
+				<Edit className="w-fit! h-fit!" />
 			</Button>
 
 			<div className="flex items-center gap-2">
@@ -43,7 +42,7 @@ export function LoginFooterOTP({
                   `}
 				>
 					دریافت مجدد کد
-					<ClockIcon className="w-fit! h-fit!" />
+					<Clock className="w-fit! h-fit!" />
 				</Button>
 			</div>
 		</div>

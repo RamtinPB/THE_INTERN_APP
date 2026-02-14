@@ -58,7 +58,7 @@ export default function SignupPage() {
 	 * RENDER
 	 * ------------------------------------------------------------ */
 	return (
-		<>
+		<div dir="rtl" className="min-h-screen flex flex-col">
 			{/* HEADER */}
 			<LoginHeader />
 
@@ -92,6 +92,7 @@ export default function SignupPage() {
 										نوع حساب کاربری
 									</label>
 									<Select
+										dir="rtl"
 										value={userType}
 										onValueChange={(value: "CUSTOMER" | "BUSINESS") =>
 											setUserType(value)
@@ -198,6 +199,6 @@ export default function SignupPage() {
 					{error && <div className="mt-2 text-right text-red-600">{error}</div>}
 				</div>
 			</main>
-		</>
+		</div>
 	);
 }
