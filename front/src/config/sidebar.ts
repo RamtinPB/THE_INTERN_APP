@@ -10,6 +10,7 @@ import {
 interface NavItem {
 	key: string;
 	name: string;
+	href: string;
 	icon: React.ComponentType | any;
 	disable?: boolean;
 	subNavItems: SubNavItem[];
@@ -30,6 +31,7 @@ export const navItems: NavItem[] = [
 		name: "داشبورد",
 		icon: User,
 		subNavItems: [],
+		href: "/",
 	},
 	{
 		key: "wallet",
@@ -43,5 +45,6 @@ export const navItems: NavItem[] = [
 				icon: undefined,
 			},
 		],
+		href: "",
 	},
 ];

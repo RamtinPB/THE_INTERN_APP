@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -17,6 +17,8 @@ import {
 	SidebarMenuSub,
 	SidebarMenuSubItem,
 	SidebarMenuSubButton,
+	SidebarGroup,
+	SidebarGroupContent,
 } from "@/components/ui/sidebar";
 import {
 	Collapsible,
@@ -53,79 +55,95 @@ export function MainLayout({ children }: MainLayoutProps) {
 	const user = useAuthUser();
 	const logout = useLogout();
 
-	// Get initials for avatar fallback
-	const getInitials = (name: string) => {
-		return name
-			.split(" ")
-			.map((n) => n[0])
-			.join("")
-			.toUpperCase()
-			.slice(0, 2);
-	};
-
 	const handleLogout = async () => {
 		await logout();
 		router.push("/login");
 	};
 
+	// Check if a nav item should be open based on current path
+	const isPathActive = (href: string) => {
+		if (!href) return false;
+		return currentPath.includes(href);
+	};
+
 	return (
 		<SidebarProvider defaultOpen={true} dir="rtl">
-			<Sidebar side="right">
+			<Sidebar side="right" className="">
 				<SidebarHeader className="p-4">
 					<h2 className="text-lg font-bold">پنل مدیریت</h2>
 				</SidebarHeader>
 
-				<SidebarContent>
-					<SidebarMenu>
-						{navItems.map((item) => (
-							<SidebarMenuItem key={item.key}>
-								<SidebarMenuButton
-									asChild={item.subNavItems.length === 0}
-									isActive={currentPath === `/${item.key}`}
-									disabled={item.disable}
-								>
-									{/* Parent item */}
-									{item.subNavItems.length === 0 ? (
-										<Link href={`/${item.key}`}>
-											{item.icon && <item.icon className="w-4 h-4" />}
-											<span>{item.name}</span>
-										</Link>
-									) : (
-										// Has sub-items - use Collapsible
-										<Collapsible defaultOpen={false}>
-											<CollapsibleTrigger className="flex w-full items-center justify-between">
-												<span className="flex items-center gap-2">
-													{item.icon && <item.icon className="w-4 h-4" />}
-													<span>{item.name}</span>
-												</span>
-												<ChevronLeft className="h-4 w-4 transition-transform Collapsible-trigger" />
+				<SidebarContent className="overflow-y-auto [&::-webkit-scrollbar]:w-2">
+					<SidebarGroup>
+						<SidebarGroupContent>
+							<SidebarMenu className="flex flex-col gap-2">
+								{navItems.map((item) => (
+									<Collapsible
+										key={item.key}
+										className={`group/collapsible ${item.disable ? "hidden" : ""}`}
+										defaultOpen={isPathActive(item.href) ? true : false}
+									>
+										<SidebarMenuItem>
+											<CollapsibleTrigger
+												className="w-full hover:bg-sidebar-accent rounded-md gap-2 flex items-center justify-between"
+												asChild
+											>
+												<SidebarMenuButton
+													className={`${
+														isPathActive(`/${item.key}`)
+															? "bg-sidebar-accent!"
+															: ""
+													}`}
+													asChild
+													isActive={isPathActive(`/${item.key}`)}
+												>
+													<Link
+														className={`w-full flex justify-start items-center ${
+															item.disable ? "hidden" : ""
+														}`}
+														href={item.href || "#"}
+													>
+														{item.icon && <item.icon className="w-4 h-4" />}
+														<p className="">{item.name}</p>
+														{item.subNavItems.length > 0 && (
+															<ChevronLeft className="h-4 w-4 mr-auto transition-transform duration-200 group-data-[state=open]/collapsible:-rotate-90" />
+														)}
+													</Link>
+												</SidebarMenuButton>
 											</CollapsibleTrigger>
 
-											<CollapsibleContent>
-												<SidebarMenuSub>
-													{item.subNavItems.map((subItem) => (
-														<SidebarMenuSubItem key={subItem.key}>
-															<SidebarMenuSubButton
-																asChild
-																isActive={currentPath === subItem.href}
-															>
-																<Link href={subItem.href}>
-																	{subItem.icon && (
-																		<subItem.icon className="w-4 h-4" />
-																	)}
-																	<span>{subItem.name}</span>
-																</Link>
-															</SidebarMenuSubButton>
-														</SidebarMenuSubItem>
-													))}
-												</SidebarMenuSub>
-											</CollapsibleContent>
-										</Collapsible>
-									)}
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						))}
-					</SidebarMenu>
+											{item.subNavItems.length > 0 && (
+												<CollapsibleContent className="gap-2">
+													<SidebarMenuSub>
+														{item.subNavItems.map((subItem) => (
+															<SidebarMenuSubItem key={subItem.key}>
+																<SidebarMenuSubButton
+																	isActive={isPathActive(subItem.href)}
+																	asChild
+																>
+																	<Link
+																		className={`flex justify-start items-center gap-2 ${
+																			subItem.disable ? "hidden" : ""
+																		}`}
+																		href={subItem.disable ? "#" : subItem.href}
+																	>
+																		{subItem.icon && (
+																			<subItem.icon className="w-4 h-4" />
+																		)}
+																		<p className="text-sm">{subItem.name}</p>
+																	</Link>
+																</SidebarMenuSubButton>
+															</SidebarMenuSubItem>
+														))}
+													</SidebarMenuSub>
+												</CollapsibleContent>
+											)}
+										</SidebarMenuItem>
+									</Collapsible>
+								))}
+							</SidebarMenu>
+						</SidebarGroupContent>
+					</SidebarGroup>
 				</SidebarContent>
 
 				<SidebarFooter>
