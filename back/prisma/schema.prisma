@@ -111,6 +111,7 @@ model Transaction {
   publicId         String            @unique @default(cuid())
   status           TransactionStatus
   transactionType  TransactionType
+  transferType     TransferType? // OWN_WALLET or P2P (only for TRANSFER type)
   amount           Decimal           @db.Decimal(18, 2)
   payerWalletId    Int
   receiverWalletId Int?
@@ -131,6 +132,11 @@ enum TransactionType {
   PURCHASE
   REFUND
   ADMIN_ADJUSTMENT
+}
+
+enum TransferType {
+  OWN_WALLET // Transfer between user's own wallets
+  P2P // Transfer to another user's wallet
 }
 
 enum TransactionStatus {

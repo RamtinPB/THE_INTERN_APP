@@ -19,6 +19,7 @@ export interface Transaction {
 		| "PURCHASE"
 		| "REFUND"
 		| "ADMIN_ADJUSTMENT";
+	transferType?: "OWN_WALLET" | "P2P"; // Only for TRANSFER type
 	amount: string;
 	payerWalletId: number;
 	receiverWalletId: number | null;

@@ -1,12 +1,5 @@
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+import { SharedWalletSelector } from "@/components/shared/WalletSelector";
 import { Wallet } from "@/lib/api/wallet";
-import { formatCurrency, formatWalletId } from "@/lib/format";
 
 interface WalletSelectorProps {
 	wallets: Wallet[];
@@ -15,47 +8,23 @@ interface WalletSelectorProps {
 	isLoading?: boolean;
 }
 
-function getWalletDisplayName(wallet: Wallet): string {
-	if (wallet.name) return wallet.name;
-	// Generate a name based on wallet ID if no name
-	return `کیف‌ پول ${formatWalletId(wallet.publicId)}`;
-}
-
+/**
+ * Dashboard wallet selector that uses publicId as value.
+ * Wraps the shared WalletSelector component.
+ */
 export function WalletSelector({
 	wallets,
 	selectedWalletId,
 	onSelect,
 	isLoading,
 }: WalletSelectorProps) {
-	if (isLoading) {
-		return <div className="h-10 w-full bg-muted animate-pulse rounded-md" />;
-	}
-
-	if (wallets.length === 0) {
-		return (
-			<div className="text-sm text-muted-foreground p-3">
-				کیف‌ پولی یافت نشد
-			</div>
-		);
-	}
-
 	return (
-		<Select dir="rtl" value={selectedWalletId || ""} onValueChange={onSelect}>
-			<SelectTrigger className="w-full">
-				<SelectValue placeholder="انتخاب کیف‌ پول" />
-			</SelectTrigger>
-			<SelectContent>
-				{wallets.map((wallet) => (
-					<SelectItem key={wallet.publicId} value={wallet.publicId}>
-						<div className="flex items-center justify-between w-full gap-4">
-							<span>{getWalletDisplayName(wallet)}</span>
-							<span className="text-muted-foreground text-sm">
-								{formatCurrency(wallet.balance)}
-							</span>
-						</div>
-					</SelectItem>
-				))}
-			</SelectContent>
-		</Select>
+		<SharedWalletSelector
+			wallets={wallets}
+			selectedWalletId={selectedWalletId}
+			onSelect={onSelect}
+			usePublicId={true}
+			isLoading={isLoading}
+		/>
 	);
 }

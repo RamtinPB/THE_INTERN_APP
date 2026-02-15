@@ -15,6 +15,7 @@ import {
 
 import { useLoginStages } from "@/components/login/hooks/useLoginStages";
 import { useOTPCountdown } from "@/components/login/hooks/useOTPCountdown";
+import { useOTPSonner } from "@/toasts/useOTPSonner";
 import { formatTime } from "@/components/login/utils/formatTime";
 
 import { StagePhone } from "@/components/login/StagePhone";
@@ -52,7 +53,14 @@ export default function SignupPage() {
 
 	const { timeLeft, resendDisabled, reset } = useOTPCountdown(stage === 1);
 
-	const [visibleOtp, setVisibleOtp] = useState<string | null>(null);
+	const { displayOTP } = useOTPSonner({ phoneNumber: phone });
+
+	const handleRequestOTP = async () => {
+		const { otp } = await requestOtp(phone, "signup");
+		displayOTP(otp);
+		reset();
+		setStage(1);
+	};
 
 	/* ------------------------------------------------------------
 	 * RENDER
@@ -129,11 +137,7 @@ export default function SignupPage() {
 							setLoading(true);
 							try {
 								if (stage === 0) {
-									// request OTP
-									const { otp } = await requestOtp(phone, "signup");
-									setVisibleOtp(otp);
-									reset();
-									setStage(1);
+									handleRequestOTP();
 								} else {
 									// verify OTP (signup)
 									const data = await apiSignup(
@@ -174,26 +178,13 @@ export default function SignupPage() {
 							editPhone={() => setStage(0)}
 							resend={async () => {
 								setError(null);
-								setLoading(true);
 								try {
-									const { otp } = await requestOtp(phone, "signup");
-									setVisibleOtp(otp);
-									reset();
-									setStage(1);
+									handleRequestOTP();
 								} catch (err: any) {
 									setError(err.message || "خطا در ارسال کد");
-								} finally {
-									setLoading(false);
 								}
 							}}
 						/>
-					)}
-
-					{visibleOtp && (
-						<div className="mt-3 w-full text-center text-sm text-[#0b0b0b] bg-[#FFF7E6] border border-[#FFE5B4] rounded py-2">
-							کد (برای تست):{" "}
-							<span className="font-mono text-lg">{visibleOtp}</span>
-						</div>
 					)}
 
 					{error && <div className="mt-2 text-right text-red-600">{error}</div>}

@@ -11,18 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
-	transferFunds,
-	transferFundsByPublicId,
-	getWalletByPublicId,
-} from "@/lib/api/wallet";
+import { transferFunds, getWalletByPublicId } from "@/lib/api/wallet";
 import type { Wallet } from "@/types/wallet";
 import { formatCurrency } from "@/lib/format";
 import {
@@ -34,6 +23,7 @@ import {
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { DirectionProvider } from "@/components/ui/direction";
+import { SharedWalletSelector } from "@/components/shared/WalletSelector";
 
 interface TransferModalProps {
 	isOpen: boolean;
@@ -60,20 +50,25 @@ export function TransferModal({
 	const [isP2PMode, setIsP2PMode] = useState(false);
 	const [recipientPublicId, setRecipientPublicId] = useState("");
 
-	// Sync fromWalletId when wallet prop changes
+	// Sync fromWalletId when wallet prop changes or auto-select primary
 	useEffect(() => {
-		if (wallet && isOpen) {
-			setFromWalletId(wallet.id.toString());
+		if (isOpen) {
+			if (wallet) {
+				setFromWalletId(wallet.id.toString());
+			} else if (!fromWalletId && wallets.length > 0) {
+				// Auto-select primary wallet if none selected
+				const primaryWallet = wallets.find((w) => w.primary);
+				if (primaryWallet) {
+					setFromWalletId(primaryWallet.id.toString());
+				} else if (wallets.length > 0) {
+					setFromWalletId(wallets[0].id.toString());
+				}
+			}
 		}
-	}, [wallet, isOpen]);
+	}, [wallet, isOpen, wallets]);
 
 	// Get selected wallet
 	const fromWallet = wallets.find((w) => w.id.toString() === fromWalletId);
-
-	// Filter out the source wallet from destination options
-	const availableDestinationWallets = wallets.filter(
-		(w) => w.id.toString() !== fromWalletId,
-	);
 
 	// Check if transfer amount is valid
 	const transferAmount = parseFloat(amount) || 0;
@@ -156,6 +151,7 @@ export function TransferModal({
 						parseInt(fromWalletId),
 						recipientWallet.id,
 						amountNum,
+						"P2P",
 					);
 				} catch (resolveErr) {
 					// If publicId resolution fails, show specific error
@@ -172,6 +168,7 @@ export function TransferModal({
 					parseInt(fromWalletId),
 					parseInt(toWalletId),
 					amountNum,
+					"OWN_WALLET",
 				);
 			}
 			onSuccess?.();
@@ -202,22 +199,14 @@ export function TransferModal({
 
 					<form onSubmit={handleSubmit} className="space-y-4">
 						{/* Source Wallet Selection */}
-						<div className="space-y-2">
-							<label className="text-sm font-medium">کیف پول مبدا</label>
-							<Select value={fromWalletId} onValueChange={setFromWalletId}>
-								<SelectTrigger>
-									<SelectValue placeholder="انتخاب کیف پول مبدا" />
-								</SelectTrigger>
-								<SelectContent>
-									{wallets.map((w) => (
-										<SelectItem key={w.id} value={w.id.toString()}>
-											{w.name || `کیف پول ${w.id}`} -{" "}
-											{formatCurrency(w.balance)}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						</div>
+						<SharedWalletSelector
+							wallets={wallets}
+							selectedWalletId={fromWalletId}
+							onSelect={setFromWalletId}
+							placeholder="انتخاب کیف پول مبدا"
+							label="کیف پول مبدا"
+							excludeWalletIds={isP2PMode ? [] : [toWalletId]}
+						/>
 
 						{/* Transfer Mode Toggle */}
 						<div className="flex items-center justify-between bg-muted p-3 rounded-lg">
@@ -257,22 +246,13 @@ export function TransferModal({
 									dir="rtl"
 								/>
 							) : (
-								<Select
-									value={toWalletId}
-									onValueChange={setToWalletId}
-									disabled={availableDestinationWallets.length === 0}
-								>
-									<SelectTrigger>
-										<SelectValue placeholder="انتخاب کیف پول مقصد" />
-									</SelectTrigger>
-									<SelectContent>
-										{availableDestinationWallets.map((w) => (
-											<SelectItem key={w.id} value={w.id.toString()}>
-												{w.name || `کیف پول ${w.id}`}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
+								<SharedWalletSelector
+									wallets={wallets}
+									selectedWalletId={toWalletId}
+									onSelect={setToWalletId}
+									placeholder="انتخاب کیف پول مقصد"
+									excludeWalletIds={[fromWalletId]}
+								/>
 							)}
 						</div>
 

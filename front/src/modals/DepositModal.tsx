@@ -11,18 +11,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { depositToWallet } from "@/lib/api/wallet";
 import type { Wallet } from "@/types/wallet";
 import { formatCurrency } from "@/lib/format";
 import { ArrowDown, Loader2 } from "lucide-react";
 import { DirectionProvider } from "@/components/ui/direction";
+import { SharedWalletSelector } from "@/components/shared/WalletSelector";
 
 interface DepositModalProps {
 	isOpen: boolean;
@@ -44,12 +38,22 @@ export function DepositModal({
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	// Sync selectedWalletId when wallet prop changes
+	// Sync selectedWalletId when wallet prop changes or auto-select primary
 	useEffect(() => {
-		if (wallet && isOpen) {
-			setSelectedWalletId(wallet.id.toString());
+		if (isOpen) {
+			if (wallet) {
+				setSelectedWalletId(wallet.id.toString());
+			} else if (!selectedWalletId && wallets.length > 0) {
+				// Auto-select primary wallet if none selected
+				const primaryWallet = wallets.find((w) => w.primary);
+				if (primaryWallet) {
+					setSelectedWalletId(primaryWallet.id.toString());
+				} else if (wallets.length > 0) {
+					setSelectedWalletId(wallets[0].id.toString());
+				}
+			}
 		}
-	}, [wallet, isOpen]);
+	}, [wallet, isOpen, wallets]);
 
 	// Reset state when modal opens/closes
 	const handleOpenChange = (open: boolean) => {
@@ -117,25 +121,12 @@ export function DepositModal({
 
 					<form onSubmit={handleSubmit} className="space-y-4">
 						{/* Wallet Selection */}
-						<div className="space-y-2">
-							<label className="text-sm font-medium">انتخاب کیف پول</label>
-							<Select
-								value={selectedWalletId}
-								onValueChange={setSelectedWalletId}
-							>
-								<SelectTrigger>
-									<SelectValue placeholder="انتخاب کیف پول" />
-								</SelectTrigger>
-								<SelectContent>
-									{wallets.map((w) => (
-										<SelectItem key={w.id} value={w.id.toString()}>
-											{w.name || `کیف پول ${w.id}`} -{" "}
-											{formatCurrency(w.balance)}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-						</div>
+						<SharedWalletSelector
+							wallets={wallets}
+							selectedWalletId={selectedWalletId}
+							onSelect={setSelectedWalletId}
+							placeholder="انتخاب کیف پول"
+						/>
 
 						{/* Amount Input */}
 						<div className="space-y-2">

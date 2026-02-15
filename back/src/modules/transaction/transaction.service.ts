@@ -24,6 +24,7 @@ export const transferFunds = async (
 	receiverWalletId: number,
 	amount: number,
 	userId: number,
+	transferType: "OWN_WALLET" | "P2P" = "P2P",
 ) => {
 	// Validate amount
 	if (amount <= 0) {
@@ -61,6 +62,7 @@ export const transferFunds = async (
 				receiverWalletId,
 				amount,
 				transactionType: "TRANSFER",
+				transferType,
 				status: "COMPLETED",
 			},
 		});

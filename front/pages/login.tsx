@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 
 import { useLoginStages } from "@/components/login/hooks/useLoginStages";
 import { useOTPCountdown } from "@/components/login/hooks/useOTPCountdown";
+import { useOTPSonner } from "@/toasts/useOTPSonner";
 import { formatTime } from "@/components/login/utils/formatTime";
 
 import {
@@ -42,7 +43,14 @@ export default function LoginPage() {
 
 	const { timeLeft, resendDisabled, reset } = useOTPCountdown(stage === 1);
 
-	const [visibleOtp, setVisibleOtp] = useState<string | null>(null);
+	const { displayOTP } = useOTPSonner({ phoneNumber: phone });
+
+	const handleRequestOTP = async () => {
+		const { otp } = await requestOtp(phone, "login");
+		displayOTP(otp);
+		reset();
+		setStage(1);
+	};
 
 	/* ------------------------------------------------------------
 	 * RENDER
@@ -96,10 +104,7 @@ export default function LoginPage() {
 							try {
 								if (stage === 0) {
 									// request OTP
-									const { otp } = await requestOtp(phone, "login");
-									setVisibleOtp(otp);
-									reset();
-									setStage(1);
+									await handleRequestOTP();
 								} else {
 									// verify OTP (login)
 									const data = await apiLogin(phone, password, code.join(""));
@@ -146,7 +151,7 @@ export default function LoginPage() {
 								setLoading(true);
 								try {
 									const { otp } = await requestOtp(phone, "login");
-									setVisibleOtp(otp);
+									displayOTP(otp);
 									reset();
 									setStage(1);
 								} catch (err: any) {
@@ -156,13 +161,6 @@ export default function LoginPage() {
 								}
 							}}
 						/>
-					)}
-
-					{visibleOtp && (
-						<div className="mt-3 w-full text-center text-sm text-[#0b0b0b] bg-[#FFF7E6] border border-[#FFE5B4] rounded py-2">
-							کد (برای تست):{" "}
-							<span className="font-mono text-lg">{visibleOtp}</span>
-						</div>
 					)}
 
 					{error && <div className="mt-2 text-right text-red-600">{error}</div>}

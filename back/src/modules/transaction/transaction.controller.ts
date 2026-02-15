@@ -3,7 +3,7 @@ import * as transactionService from "./transaction.service";
 // Transfer funds between wallets
 export const transfer = async (ctx: any) => {
 	const body = await ctx.body;
-	const { fromWalletId, toWalletId, amount } = body;
+	const { fromWalletId, toWalletId, amount, transferType } = body;
 	const userId = ctx.user.id;
 
 	if (!fromWalletId || !toWalletId || !amount) {
@@ -17,6 +17,7 @@ export const transfer = async (ctx: any) => {
 			parseInt(toWalletId),
 			parseFloat(amount),
 			userId,
+			transferType || "P2P",
 		);
 		return result;
 	} catch (err: any) {

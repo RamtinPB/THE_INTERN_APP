@@ -8,6 +8,8 @@ import {
 	ShoppingCart,
 	RefreshCcw,
 	ShieldAlert,
+	Users,
+	Wallet,
 } from "lucide-react";
 
 interface TransactionItemProps {
@@ -44,7 +46,7 @@ function getTransactionTitle(
 		case "WITHDRAW":
 			return "برداشت";
 		case "TRANSFER":
-			return isPayer ? "انتقال به" : "انتقال از";
+			return "انتقال";
 		case "PURCHASE":
 			return "خرید";
 		case "REFUND":
@@ -54,6 +56,25 @@ function getTransactionTitle(
 		default:
 			return "تراکنش";
 	}
+}
+
+function getTransferTypeBadge(transferType?: "OWN_WALLET" | "P2P") {
+	if (transferType === "P2P") {
+		return (
+			<span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+				<Users className="h-3 w-3" />
+				P2P
+			</span>
+		);
+	} else if (transferType === "OWN_WALLET") {
+		return (
+			<span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
+				<Wallet className="h-3 w-3" />
+				به کیف پول خود
+			</span>
+		);
+	}
+	return null;
 }
 
 function getTransactionSubtitle(
@@ -94,6 +115,11 @@ export function TransactionItem({
 					<p className="text-xs text-muted-foreground truncate">
 						{getTransactionSubtitle(transaction, isPayer)}
 					</p>
+				)}
+				{transaction.transactionType === "TRANSFER" && (
+					<div className="mt-1">
+						{getTransferTypeBadge(transaction.transferType)}
+					</div>
 				)}
 			</div>
 			<div className="text-left">

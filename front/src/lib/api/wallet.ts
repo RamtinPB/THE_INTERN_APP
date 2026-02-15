@@ -171,6 +171,7 @@ export async function transferFunds(
 	fromWalletId: number,
 	toWalletId: number,
 	amount: number,
+	transferType: "OWN_WALLET" | "P2P" = "P2P",
 ): Promise<{ transaction: Transaction }> {
 	const response = await authenticatedFetch(
 		`${API_BASE}/transaction/transfer`,
@@ -181,6 +182,7 @@ export async function transferFunds(
 				fromWalletId,
 				toWalletId,
 				amount,
+				transferType,
 			}),
 		},
 	);
