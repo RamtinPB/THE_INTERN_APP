@@ -29,7 +29,7 @@ import {
 	Wallet as WalletIcon,
 } from "lucide-react";
 
-const FEE_PERCENTAGE = 0.01; // 1% fee
+const FEE_PERCENTAGE = 0.0; // 1% fee
 
 interface PurchaseModalProps {
 	isOpen: boolean;
