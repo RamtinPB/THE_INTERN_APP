@@ -4,6 +4,7 @@ import {
 	Settings,
 	Wallet,
 	PlusCircle,
+	ShoppingCart,
 } from "lucide-react";
 
 interface NavItem {
@@ -31,6 +32,13 @@ export const navItems: NavItem[] = [
 		icon: LayoutDashboard,
 		subNavItems: [],
 		href: "/",
+	},
+	{
+		key: "business",
+		name: "خرید از فروشگاه",
+		icon: ShoppingCart,
+		subNavItems: [],
+		href: "/business",
 	},
 	{
 		key: "wallet",

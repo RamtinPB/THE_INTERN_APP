@@ -8,7 +8,7 @@ import * as authRepository from "./auth.repository";
 import * as walletRepository from "../wallet/wallet.repository";
 import bcrypt from "bcryptjs";
 
-const OTP_LENGTH = 4;
+const OTP_LENGTH = 6;
 const OTP_EXP = parseInt(process.env.OTP_EXPIRE_IN!, 10);
 const REFRESH_EXP = process.env.REFRESH_TOKEN_EXPIRE_IN;
 

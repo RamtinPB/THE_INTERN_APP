@@ -15,20 +15,23 @@ export function LoginFooterOTP({
 	resend: () => void;
 }) {
 	return (
-		<div dir="rtl" className="flex justify-between items-center w-full mt-2">
+		<div
+			dir="rtl"
+			className="flex justify-between items-center w-full mt-4 pt-4 border-t border-gray-100"
+		>
 			<Button
 				variant="ghost"
-				className="text-[#FF6A29] font-medium"
+				className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 font-medium"
 				onClick={editPhone}
 			>
-				<span className="text-[#787471] font-normal text-[16px]">
+				<span className="text-gray-500 font-normal text-[14px]">
 					ویرایش شماره
 				</span>
-				<Edit className="w-fit! h-fit!" />
+				<Edit className="w-4 h-4 mr-1" />
 			</Button>
 
-			<div className="flex items-center gap-2">
-				<span className="text-[#FF5500] bg-[#FAFAFA] border border-[#EDEDED] text-[14px] rounded-lg px-2 py-1">
+			<div className="flex items-center gap-3">
+				<span className="text-gray-600 bg-gray-100 border border-gray-200 text-[13px] rounded-lg px-3 py-1.5 font-medium">
 					{timeLeft}
 				</span>
 
@@ -37,12 +40,12 @@ export function LoginFooterOTP({
 					disabled={resendDisabled}
 					onClick={resend}
 					className={`
-                    font-medium
-                    ${resendDisabled ? "text-[#C0C0C0]" : "text-[#787471]"}
+                    font-medium text-sm
+                    ${resendDisabled ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:text-gray-800 hover:bg-gray-100"}
                   `}
 				>
 					دریافت مجدد کد
-					<Clock className="w-fit! h-fit!" />
+					<Clock className="w-4 h-4 mr-1" />
 				</Button>
 			</div>
 		</div>

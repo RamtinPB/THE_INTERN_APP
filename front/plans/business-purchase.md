@@ -5,7 +5,7 @@
 - **Route:** `/business`
 - **File:** `front/pages/business.tsx`
 - **Purpose:** Allow users to simulate a purchase from a business merchant
-- **Pattern:** Product card with purchase modal
+- **Pattern:** Single product/service card with purchase modal
 
 ---
 
@@ -19,16 +19,18 @@
 │  │                 Purchase from Store                      │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │                                                                │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐          │
-│  │  Product 1  │  │  Product 2  │  │  Product 3  │          │
-│  │  [Image]    │  │  [Image]    │  │  [Image]    │          │
-│  │             │  │             │  │             │          │
-│  │  Name       │  │  Name       │  │  Name       │          │
-│  │  Price      │  │  Price      │  │  Price      │          │
-│  │             │  │             │  │             │          │
-│  │  [خرید]     │  │  [خرید]     │  │  [خرید]     │          │
-│  │  [Purchase] │  │  [Purchase] │  │  [Purchase] │          │
-│  └─────────────┘  └─────────────┘  └─────────────┘          │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                                                          │  │
+│  │                   [Product Image]                        │  │
+│  │                                                          │  │
+│  │              Premium Subscription                        │  │
+│  │              اشتراک پرمیوم                              │  │
+│  │                                                          │  │
+│  │              ۵۰۰,۰۰۰ تومان                             │  │
+│  │                                                          │  │
+│  │                   [خرید / Purchase]                      │  │
+│  │                                                          │  │
+│  └──────────────────────────────────────────────────────────┘  │
 │                                                                │
 └────────────────────────────────────────────────────────────────┘
 ```
@@ -37,7 +39,7 @@
 
 ## Product Card Component
 
-### Props / Data
+### Single Product Data
 
 ```typescript
 interface Product {
@@ -48,19 +50,12 @@ interface Product {
 	descriptionFa: string;
 	price: number;
 	image: string;
-	category: string;
 }
 ```
 
-### Placeholder Products
-
-| ID  | Name (EN)            | Name (FA)         | Price (Toman) | Category     |
-| --- | -------------------- | ----------------- | ------------- | ------------ |
-| 1   | Premium Subscription | اشتراک پرمیوم     | 500,000       | Subscription |
-| 2   | Digital Gift Card    | کارت هدیه دیجیتال | 200,000       | Gift Card    |
-| 3   | Online Course        | دوره آنلاین       | 1,000,000     | Education    |
-| 4   | Software License     | لاینسس نرم‌افزار  | 350,000       | Software     |
-| 5   | Game Credits         | اعتبار بازی       | 100,000       | Gaming       |
+| ID  | Name (EN)            | Name (FA)     | Price (Toman) |
+| --- | -------------------- | ------------- | ------------- |
+| 1   | Premium Subscription | اشتراک پرمیوم | 500,000       |
 
 ### Card Layout
 
@@ -313,15 +308,13 @@ await prisma.$transaction(async (tx) => {
 ```
 front/
 ├── pages/
-│   └── business.tsx              # Main page
+│   └── business.tsx              # Main page with single product
 ├── src/
 │   ├── modals/
 │   │   └── PurchaseModal.tsx    # Purchase confirmation modal
 │   ├── components/
 │   │   └── business/
-│   │       ├── ProductCard.tsx  # Individual product card
-│   │       ├── ProductGrid.tsx   # Grid of products
-│   │       └── PurchaseForm.tsx  # React Hook Form for purchase
+│   │       └── ProductCard.tsx  # Single product card
 │   ├── hooks/
 │   │   ├── usePurchase.ts       # Purchase logic hook
 │   │   └── useOTPSonner.tsx    # OTP display via sonner (simulation)
@@ -336,7 +329,7 @@ front/
 ```typescript
 interface PurchaseState {
 	isOpen: boolean;
-	selectedProduct: Product | null;
+	product: Product;
 	phoneNumber: string;
 	otpCode: string;
 	otpSent: boolean;
@@ -351,9 +344,9 @@ interface PurchaseState {
 ### User Interactions Flow
 
 ```
-1. User views product cards
+1. User views the product
       ↓
-2. Clicks "خرید / Purchase" on a product
+2. Clicks "خرید / Purchase"
       ↓
 3. Modal opens with product summary
       ↓
@@ -382,7 +375,7 @@ interface PurchaseState {
 
 ## Acceptance Criteria
 
-1. ✅ Page displays product cards with placeholder data
+1. ✅ Page displays single product with placeholder data
 2. ✅ Clicking "Purchase" opens modal with product summary
 3. ✅ Modal shows price breakdown (amount, fee, total)
 4. ✅ Phone number input with validation
@@ -390,7 +383,7 @@ interface PurchaseState {
 6. ✅ Form validation before enabling confirm button
 7. ✅ Uses react-hook-form for form handling
 8. ✅ Purchase is processed atomically (all-or-nothing)
-9. ✅ Receiver is the first BUSINESS user type
+9. ✅ Receiver is the first user with usertype BUSINESS
 10. ✅ Success/error states handled properly
 
 ---

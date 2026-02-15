@@ -1,3 +1,3 @@
-given that a wallet can be set to primary.
-all relevant wallet selectors in and and and
-should have the primary wallet selected on initial load.
+make sure all relevant form like pages use react hook form and zod and reslover and adhere to industry standards.
+
+make sure all the pages and components of this project align with the persian language.

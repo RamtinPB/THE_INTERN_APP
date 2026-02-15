@@ -4,6 +4,7 @@ import { AuthBootstrap } from "@/components/AuthBootstrap";
 import { ReactElement, ReactNode } from "react";
 import "@/globals.css";
 import { Baloo_Bhaijaan_2 } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
 
 const balooBhaijaan = Baloo_Bhaijaan_2({
 	subsets: ["arabic", "latin"],
@@ -19,6 +20,7 @@ export default function App({ Component, pageProps }: AppProps) {
 		<AuthBootstrap>
 			<div className={balooBhaijaan.className}>
 				{getLayout(<Component {...pageProps} />)}
+				<Toaster />
 			</div>
 		</AuthBootstrap>
 	);

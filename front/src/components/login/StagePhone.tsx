@@ -1,65 +1,117 @@
 "use client";
 
-import { ButtonGroup } from "@/components/ui/button-group";
 import {
 	InputGroup,
 	InputGroupAddon,
+	InputGroupButton,
 	InputGroupInput,
 } from "@/components/ui/input-group";
 
 import { Phone, Eye, EyeClosed } from "lucide-react";
-import { Button } from "../../components/ui/button";
 import { useState } from "react";
+import { FieldErrors } from "react-hook-form";
+
+interface StagePhoneProps {
+	password: string;
+	setPassword: (v: string) => void;
+	phone: string;
+	setPhone: (v: string) => void;
+	register?: any;
+	errors?: FieldErrors;
+}
 
 export function StagePhone({
 	password,
 	setPassword,
 	phone,
 	setPhone,
-}: {
-	password: string;
-	setPassword: (v: string) => void;
-	phone: string;
-	setPhone: (v: string) => void;
-}) {
+	register,
+	errors,
+}: StagePhoneProps) {
 	const [showPassword, setShowPassword] = useState(false);
-	return (
-		<div className="flex flex-col justify-between gap-3">
-			<div className=" group flex border border-[#EDEDED] rounded-xl w-full focus-within:border-[#FF6A29] ">
-				<InputGroup className="rounded-none rounded-l-xl h-[46px]! w-[calc(100%-46px)]! ring-0 focus:ring-0 focus-visible:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-transparent shadow-none ">
-					<InputGroupInput
-						placeholder="09xx-xxx-xxxx"
-						value={phone}
-						onChange={(e) => setPhone(e.target.value)}
-						className="focus:border-[#FF6A29] focus:ring-[#FF6A29]"
-					/>
-				</InputGroup>
-				<InputGroupAddon className="rounded-r-xl w-[46px]! h-[46px]! p-2 bg-[#F7F7F7] border border-[#EDEDED]  group-focus-within:border-[#FF6A29] ">
-					<Phone className="w-fit! h-fit!" />
-				</InputGroupAddon>
-			</div>
 
-			<ButtonGroup className=" group flex flex-row-reverse border border-[#EDEDED] rounded-xl w-full focus-within:border-[#FF6A29] ">
-				<InputGroup className="rounded-none rounded-l-xl h-[46px] w-[calc(100%-46px)]! ring-0 focus:ring-0 focus-visible:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-0 has-[[data-slot=input-group-control]:focus-visible]:ring-transparent shadow-none ">
-					<InputGroupInput
-						placeholder="***************"
-						value={password}
-						type={showPassword ? "text" : "password"}
-						onChange={(e) => setPassword(e.target.value)}
-						className="focus:border-[#FF6A29] focus:ring-[#FF6A29]"
-					/>
+	// If react-hook-form is used (register is provided)
+	if (register) {
+		return (
+			<div className="flex flex-col justify-between gap-4">
+				{/* Phone Input */}
+				<InputGroup>
+					<InputGroupInput placeholder="09xx-xxx-xxxx" {...register("phone")} />
+					<InputGroupAddon align="inline-end" className="px-2">
+						<Phone className="size-4" />
+					</InputGroupAddon>
 				</InputGroup>
-				<Button
-					className="rounded-r-xl w-[46px]! h-[46px]! p-2 bg-[#F7F7F7] border border-[#EDEDED] group-focus-within:border-[#FF6A29] "
-					onClick={() => setShowPassword(!showPassword)}
-				>
-					{showPassword ? (
-						<Eye className="w-fit! h-fit!" />
-					) : (
-						<EyeClosed className="w-fit! h-fit!" />
-					)}
-				</Button>
-			</ButtonGroup>
+				{errors?.phone && (
+					<p className="text-red-500 text-sm mt-1">
+						{errors.phone.message as string}
+					</p>
+				)}
+
+				{/* Password Input */}
+				<InputGroup>
+					<InputGroupInput
+						placeholder="رمز عبور"
+						type={showPassword ? "text" : "password"}
+						{...register("password")}
+					/>
+					<InputGroupAddon align="inline-end">
+						<InputGroupButton
+							size="icon-sm"
+							onClick={() => setShowPassword(!showPassword)}
+						>
+							{showPassword ? (
+								<Eye className="size-4" />
+							) : (
+								<EyeClosed className="size-4" />
+							)}
+						</InputGroupButton>
+					</InputGroupAddon>
+				</InputGroup>
+				{errors?.password && (
+					<p className="text-red-500 text-sm mt-1">
+						{errors.password.message as string}
+					</p>
+				)}
+			</div>
+		);
+	}
+
+	// Legacy support without react-hook-form
+	return (
+		<div className="flex flex-col justify-between gap-4">
+			{/* Phone Input */}
+			<InputGroup>
+				<InputGroupInput
+					placeholder="09xx-xxx-xxxx"
+					value={phone}
+					onChange={(e) => setPhone(e.target.value)}
+				/>
+				<InputGroupAddon align="inline-end" className="px-2">
+					<Phone className="size-4" />
+				</InputGroupAddon>
+			</InputGroup>
+
+			{/* Password Input */}
+			<InputGroup>
+				<InputGroupInput
+					placeholder="رمز عبور"
+					value={password}
+					type={showPassword ? "text" : "password"}
+					onChange={(e) => setPassword(e.target.value)}
+				/>
+				<InputGroupAddon align="inline-end">
+					<InputGroupButton
+						size="icon-sm"
+						onClick={() => setShowPassword(!showPassword)}
+					>
+						{showPassword ? (
+							<Eye className="size-4" />
+						) : (
+							<EyeClosed className="size-4" />
+						)}
+					</InputGroupButton>
+				</InputGroupAddon>
+			</InputGroup>
 		</div>
 	);
 }

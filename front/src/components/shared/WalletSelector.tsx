@@ -70,9 +70,9 @@ export function SharedWalletSelector({
 	const getDefaultValue = (): string => {
 		if (selectedIdStr) {
 			// Return the currently selected wallet
-			return usePublicId
-				? wallets.find((w) => w.id.toString() === selectedIdStr)?.publicId || ""
-				: selectedIdStr;
+			// When usePublicId is true, selectedIdStr is already the publicId
+			// When usePublicId is false, selectedIdStr is the internal id
+			return selectedIdStr;
 		}
 
 		// Auto-select primary wallet
