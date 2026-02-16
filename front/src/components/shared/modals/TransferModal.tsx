@@ -50,22 +50,40 @@ export function TransferModal({
 	const [isP2PMode, setIsP2PMode] = useState(false);
 	const [recipientPublicId, setRecipientPublicId] = useState("");
 
-	// Sync fromWalletId when wallet prop changes or auto-select primary
+	// Sync wallet IDs when modal opens - initialize both source and destination
 	useEffect(() => {
-		if (isOpen) {
+		if (isOpen && wallets.length > 0) {
+			// Determine the source wallet
+			let sourceWallet: Wallet | undefined;
 			if (wallet) {
-				setFromWalletId(wallet.id.toString());
-			} else if (!fromWalletId && wallets.length > 0) {
-				// Auto-select primary wallet if none selected
-				const primaryWallet = wallets.find((w) => w.primary);
-				if (primaryWallet) {
-					setFromWalletId(primaryWallet.id.toString());
-				} else if (wallets.length > 0) {
-					setFromWalletId(wallets[0].id.toString());
+				sourceWallet = wallet;
+			} else {
+				// Auto-select primary wallet for source if not provided
+				sourceWallet = wallets.find((w) => w.primary) || wallets[0];
+			}
+
+			// Set source wallet ID if not already set
+			if (sourceWallet) {
+				const sourceId = sourceWallet.id.toString();
+				if (!fromWalletId || fromWalletId === sourceId) {
+					setFromWalletId(sourceId);
+				}
+
+				// Set destination wallet ID to a different wallet
+				if (!toWalletId) {
+					const otherWallets = wallets.filter(
+						(w) => w.id.toString() !== sourceId,
+					);
+					if (otherWallets.length > 0) {
+						// Prefer primary if it's not the source, otherwise first available
+						const destWallet =
+							otherWallets.find((w) => w.primary) || otherWallets[0];
+						setToWalletId(destWallet.id.toString());
+					}
 				}
 			}
 		}
-	}, [wallet, isOpen, wallets]);
+	}, [isOpen, wallet, wallets, fromWalletId, toWalletId]);
 
 	// Get selected wallet
 	const fromWallet = wallets.find((w) => w.id.toString() === fromWalletId);
