@@ -135,13 +135,13 @@ export function TransactionRow({
 	let description = transaction.description || "";
 
 	// For transfers, show the transfer type and recipient info
-	if (transaction.transactionType === "TRANSFER") {
-		if (transaction.receiverWallet) {
-			description = `انتقال به: ${transaction.receiverWallet.publicId}`;
-		} else if (transaction.payerWallet) {
-			description = `انتقال از: ${transaction.payerWallet.publicId}`;
-		}
-	}
+	// if (transaction.transactionType === "TRANSFER") {
+	// 	if (transaction.receiverWallet) {
+	// 		description = `انتقال به: ${transaction.receiverWallet.publicId}`;
+	// 	} else if (transaction.payerWallet) {
+	// 		description = `انتقال از: ${transaction.payerWallet.publicId}`;
+	// 	}
+	// }
 
 	return (
 		<TableRow
@@ -177,7 +177,7 @@ export function TransactionRow({
 					<span>{transactionStatusLabels[transaction.status]}</span>
 				</Badge>
 			</TableCell>
-			<TableCell className="text-muted-foreground text-center">
+			<TableCell className="text-muted-foreground text-center max-w-[150px] wrap-break-word whitespace-pre-line">
 				{description || "-"}
 			</TableCell>
 			<TableCell className=" ">

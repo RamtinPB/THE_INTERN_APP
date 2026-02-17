@@ -163,7 +163,7 @@ export function TransferModal({
 					);
 
 					// Use the resolved wallet ID for the transfer
-					const description = `انتقال P2P به کیف پول ${recipientPublicId.trim()}`;
+					const description = `انتقال P2P از کیف پول ${fromWallet?.publicId || ""}\nبه کیف پول ${recipientPublicId.trim()}`;
 					await transferFunds(
 						parseInt(fromWalletId),
 						recipientWallet.id,
@@ -183,7 +183,7 @@ export function TransferModal({
 				}
 			} else {
 				const toWallet = wallets.find((w) => w.id.toString() === toWalletId);
-				const description = `انتقال به کیف پول ${toWallet?.publicId || ""}`;
+				const description = `انتقال از کیف پول ${fromWallet?.publicId || ""}\nبه کیف پول ${toWallet?.publicId || ""}`;
 				await transferFunds(
 					parseInt(fromWalletId),
 					parseInt(toWalletId),

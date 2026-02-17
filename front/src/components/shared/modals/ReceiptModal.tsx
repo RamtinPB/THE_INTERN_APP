@@ -230,7 +230,9 @@ export function ReceiptModal({
 						{transaction.description && (
 							<div className="flex justify-between">
 								<span className="text-muted-foreground">توضیحات:</span>
-								<span>{transaction.description}</span>
+								<span className="wrap-break-word whitespace-pre-line text-left">
+									{transaction.description}
+								</span>
 							</div>
 						)}
 					</div>
