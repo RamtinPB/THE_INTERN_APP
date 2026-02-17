@@ -10,6 +10,7 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -18,12 +19,14 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Calendar, SlidersHorizontal, Loader2 } from "lucide-react";
+import { Calendar, SlidersHorizontal, Loader2, Star } from "lucide-react";
 import type { TransactionsFilters } from "@/types/transaction";
 import type { Wallet } from "@/types/wallet";
 import {
 	transactionTypeOptions,
 	transactionStatusOptions,
+	transactionTypeLabels,
+	transactionStatusLabels,
 } from "@/types/transaction";
 
 interface TransactionFiltersModalProps {
@@ -95,6 +98,9 @@ export function TransactionFiltersModal({
 		localFilters.toDate
 	);
 
+	// Get selected wallet for display
+	const selectedWallet = wallets.find((w) => w.id === localFilters.walletId);
+
 	return (
 		<Dialog open={isOpen} onOpenChange={handleOpenChange}>
 			<DialogContent
@@ -118,18 +124,54 @@ export function TransactionFiltersModal({
 						<Select
 							value={localFilters.walletId?.toString() || ""}
 							onValueChange={(value) =>
-								updateFilter("walletId", value ? parseInt(value) : undefined)
+								updateFilter(
+									"walletId",
+									value === "all" ? undefined : parseInt(value),
+								)
 							}
 							disabled={isLoadingWallets}
 						>
 							<SelectTrigger>
-								<SelectValue placeholder="همه کیف پول‌ها" />
+								<SelectValue placeholder="همه کیف پول‌ها">
+									{localFilters.walletId && selectedWallet ? (
+										<div className="flex items-center gap-2">
+											{selectedWallet.primary && (
+												<Badge
+													variant="secondary"
+													className="bg-yellow-100 text-yellow-800 gap-1"
+												>
+													<Star className="h-3 w-3 fill-yellow-500" />
+													اصلی
+												</Badge>
+											)}
+											<span>
+												{selectedWallet.name ||
+													`**** ${selectedWallet.publicId.slice(-4)}`}
+											</span>
+										</div>
+									) : (
+										"همه کیف پول‌ها"
+									)}
+								</SelectValue>
 							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="">همه کیف پول‌ها</SelectItem>
+							<SelectContent dir="rtl">
+								<SelectItem value="all">همه کیف پول‌ها</SelectItem>
 								{wallets.map((wallet) => (
 									<SelectItem key={wallet.id} value={wallet.id.toString()}>
-										{wallet.name || `**** ${wallet.publicId.slice(-4)}`}
+										<div className="flex items-center gap-2">
+											<span>
+												{wallet.name || `**** ${wallet.publicId.slice(-4)}`}
+											</span>
+											{wallet.primary && (
+												<Badge
+													variant="secondary"
+													className="bg-yellow-100 text-yellow-800 gap-1"
+												>
+													اصلی
+													<Star className="h-3 w-3 fill-yellow-500" />
+												</Badge>
+											)}
+										</div>
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -142,14 +184,25 @@ export function TransactionFiltersModal({
 						<Select
 							value={localFilters.type || ""}
 							onValueChange={(value) =>
-								updateFilter("type", value || undefined)
+								updateFilter("type", value === "all" ? undefined : value)
 							}
 						>
 							<SelectTrigger>
-								<SelectValue placeholder="همه انواع" />
+								<SelectValue placeholder="همه انواع">
+									{localFilters.type ? (
+										<Badge variant="secondary" className="ml-2">
+											{
+												transactionTypeLabels[
+													localFilters.type as keyof typeof transactionTypeLabels
+												]
+											}
+										</Badge>
+									) : (
+										"همه انواع"
+									)}
+								</SelectValue>
 							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="">همه انواع</SelectItem>
+							<SelectContent dir="rtl">
 								{transactionTypeOptions.map((option) => (
 									<SelectItem key={option.value} value={option.value}>
 										{option.label}
@@ -165,14 +218,25 @@ export function TransactionFiltersModal({
 						<Select
 							value={localFilters.status || ""}
 							onValueChange={(value) =>
-								updateFilter("status", value || undefined)
+								updateFilter("status", value === "all" ? undefined : value)
 							}
 						>
 							<SelectTrigger>
-								<SelectValue placeholder="همه وضعیت‌ها" />
+								<SelectValue placeholder="همه انواع">
+									{localFilters.status ? (
+										<Badge variant="secondary" className="ml-2">
+											{
+												transactionStatusLabels[
+													localFilters.status as keyof typeof transactionStatusLabels
+												]
+											}
+										</Badge>
+									) : (
+										"همه انواع"
+									)}
+								</SelectValue>
 							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="">همه وضعیت‌ها</SelectItem>
+							<SelectContent dir="rtl">
 								{transactionStatusOptions.map((option) => (
 									<SelectItem key={option.value} value={option.value}>
 										{option.label}

@@ -93,7 +93,7 @@ export const transactionStatusIcons: Record<TransactionStatus, string> = {
 
 // Type options for filters
 export const transactionTypeOptions = [
-	{ value: "", label: "همه" },
+	{ value: "all", label: "همه" },
 	{ value: "PURCHASE", label: "خرید" },
 	{ value: "TRANSFER", label: "انتقال" },
 	{ value: "DEPOSIT", label: "واریز" },
@@ -103,7 +103,7 @@ export const transactionTypeOptions = [
 ];
 
 export const transactionStatusOptions = [
-	{ value: "", label: "همه" },
+	{ value: "all", label: "همه" },
 	{ value: "COMPLETED", label: "تکمیل شده" },
 	{ value: "PENDING", label: "در انتظار" },
 	{ value: "FAILED", label: "ناموفق" },

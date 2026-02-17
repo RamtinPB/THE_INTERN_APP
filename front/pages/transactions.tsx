@@ -69,9 +69,9 @@ export default function TransactionsPage() {
 		setShowFilters(false);
 	};
 
-	// Handle clear filters
+	// Handle clear filters - reset to primary wallet
 	const handleClearFilters = () => {
-		// When clearing, set to primary wallet
+		// Reset to primary wallet - this is the default state
 		const primaryWallet = wallets.find((w) => w.primary);
 		if (primaryWallet) {
 			setFilters({ walletId: primaryWallet.id });
@@ -80,8 +80,18 @@ export default function TransactionsPage() {
 		}
 	};
 
-	// Handle remove single filter
+	// Handle remove single filter - for walletId, reset to primary wallet instead of removing
 	const handleRemoveFilter = (key: keyof TransactionsFilters) => {
+		// If removing walletId, reset to primary wallet instead of truly removing
+		if (key === "walletId") {
+			const primaryWallet = wallets.find((w) => w.primary);
+			if (primaryWallet) {
+				setFilters({ ...filters, walletId: primaryWallet.id });
+			}
+			return;
+		}
+
+		// For other filters, remove them
 		const newFilters = { ...filters };
 		delete newFilters[key];
 		setFilters(newFilters);
@@ -99,12 +109,14 @@ export default function TransactionsPage() {
 		setSelectedTransaction(null);
 	};
 
-	// Check if any filters are active (excluding search and walletId which has special handling)
+	// Check if any filters are active (excluding search)
+	// Note: walletId is always active since we default to primary wallet
 	const hasActiveFilters = !!(
 		filters.type ||
 		filters.status ||
 		filters.fromDate ||
-		filters.toDate
+		filters.toDate ||
+		filters.walletId
 	);
 
 	// Get the current wallet being displayed

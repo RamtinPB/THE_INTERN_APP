@@ -78,7 +78,7 @@ export function TransactionFilters({
 					<label className="text-sm font-medium mb-2 block">نوع تراکنش</label>
 					<Select
 						value={localFilters.type || ""}
-						onValueChange={(value) => updateFilter("type", value || "")}
+						onValueChange={(value) => updateFilter("type", value || undefined)}
 					>
 						<SelectTrigger>
 							<SelectValue placeholder="همه" />
@@ -98,7 +98,9 @@ export function TransactionFilters({
 					<label className="text-sm font-medium mb-2 block">وضعیت</label>
 					<Select
 						value={localFilters.status || ""}
-						onValueChange={(value) => updateFilter("status", value || "")}
+						onValueChange={(value) =>
+							updateFilter("status", value || undefined)
+						}
 					>
 						<SelectTrigger>
 							<SelectValue placeholder="همه" />
@@ -119,7 +121,10 @@ export function TransactionFilters({
 					<Select
 						value={localFilters.walletId?.toString() || ""}
 						onValueChange={(value) =>
-							updateFilter("walletId", value ? parseInt(value) : "")
+							updateFilter(
+								"walletId",
+								value === "all" ? undefined : parseInt(value),
+							)
 						}
 						disabled={isLoadingWallets}
 					>
@@ -127,7 +132,7 @@ export function TransactionFilters({
 							<SelectValue placeholder="همه" />
 						</SelectTrigger>
 						<SelectContent>
-							<SelectItem value="">همه</SelectItem>
+							<SelectItem value="all">همه</SelectItem>
 							{wallets.map((wallet) => (
 								<SelectItem key={wallet.id} value={wallet.id.toString()}>
 									{wallet.name || `**** ${wallet.publicId.slice(-4)}`}
