@@ -10,6 +10,7 @@ import {
 	HelpCircle,
 	ArrowDown,
 	ArrowUp,
+	Users,
 } from "lucide-react";
 import {
 	Table,
@@ -64,6 +65,26 @@ function isIncoming(transaction: TransactionWithDetails): boolean {
 	);
 }
 
+// Get transfer type badge
+function getTransferTypeBadge(transferType?: "OWN_WALLET" | "P2P") {
+	if (transferType === "P2P") {
+		return (
+			<Badge className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+				<Users className="h-3 w-3" />
+				P2P
+			</Badge>
+		);
+	} else if (transferType === "OWN_WALLET") {
+		return (
+			<Badge className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
+				<Wallet className="h-3 w-3" />
+				به کیف پول خود
+			</Badge>
+		);
+	}
+	return null;
+}
+
 export function TransactionRow({
 	transaction,
 	index,
@@ -104,9 +125,16 @@ export function TransactionRow({
 				{formattedDate}
 			</TableCell>
 			<TableCell className="">
-				<div className="flex items-center justify-center gap-1">
-					{getTransactionIcon(transaction.transactionType)}
-					<span>{transactionTypeLabels[transaction.transactionType]}</span>
+				<div className="flex flex-col items-center justify-center gap-1">
+					<div className="flex items-center justify-center gap-1">
+						{getTransactionIcon(transaction.transactionType)}
+						<span>{transactionTypeLabels[transaction.transactionType]}</span>
+					</div>
+					{transaction.transactionType === "TRANSFER" && (
+						<div className="mt-1">
+							{getTransferTypeBadge(transaction.transferType)}
+						</div>
+					)}
 				</div>
 			</TableCell>
 			<TableCell className=" text-center">

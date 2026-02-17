@@ -56,9 +56,10 @@ export default function Dashboard() {
 			const { wallets: userWallets } = await getUserWallets();
 			setWallets(userWallets);
 
-			// Auto-select first wallet if none selected
+			// Auto-select primary wallet, or first wallet if no primary exists
 			if (userWallets.length > 0 && !selectedWalletId) {
-				setSelectedWalletId(userWallets[0].publicId);
+				const primaryWallet = userWallets.find((w) => w.primary);
+				setSelectedWalletId(primaryWallet?.publicId || userWallets[0].publicId);
 			}
 		} catch (err) {
 			console.error("Failed to fetch wallets:", err);

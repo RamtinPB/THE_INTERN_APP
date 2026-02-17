@@ -11,6 +11,7 @@ import {
 	Users,
 	Wallet,
 } from "lucide-react";
+import { Badge } from "../ui/badge";
 
 interface TransactionItemProps {
 	transaction: Transaction;
@@ -61,17 +62,17 @@ function getTransactionTitle(
 function getTransferTypeBadge(transferType?: "OWN_WALLET" | "P2P") {
 	if (transferType === "P2P") {
 		return (
-			<span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+			<Badge className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
 				<Users className="h-3 w-3" />
 				P2P
-			</span>
+			</Badge>
 		);
 	} else if (transferType === "OWN_WALLET") {
 		return (
-			<span className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
+			<Badge className="inline-flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
 				<Wallet className="h-3 w-3" />
 				به کیف پول خود
-			</span>
+			</Badge>
 		);
 	}
 	return null;
