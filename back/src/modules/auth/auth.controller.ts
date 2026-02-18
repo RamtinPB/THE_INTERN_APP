@@ -1,4 +1,5 @@
 import * as authService from "./auth.service";
+import * as adminRepository from "../admin/admin.repository";
 import {
 	verifyRefreshToken,
 	parseExpiryToMs,
@@ -174,26 +175,42 @@ export const logout = async (ctx: any) => {
 export const me = async (ctx: any) => {
 	// The auth guard has already validated the token and attached user info to ctx.user
 	try {
-		// ctx.user should contain { id: userId, role: userRole } from the guard
+		// ctx.user should contain { id: userId, role: userRole, adminId, adminType, permissions } from the guard
 		if (!ctx.user) {
 			ctx.set.status = 401;
 			return { error: "User not authenticated" };
 		}
 
-		// Since we already have the user info from the validated token,
-		// we can return it directly without another database lookup
-		// But if you need fresh data, you can uncomment the repository call below
-		// const user = await authRepository.findUserById(ctx.user.id);
-		// if (!user) {
-		//     ctx.set.status = 401;
-		//     return { error: "User not found" };
-		// }
-		// return { user: { id: user.id, phoneNumber: user.phoneNumber, role: user.role } };
-
-		// For now, return the user info from the token
-		return {
-			user: { id: ctx.user.id, userType: ctx.user.userType },
+		// Build response with user info
+		const response: any = {
+			id: ctx.user.id,
+			phoneNumber: ctx.user.phoneNumber || "", // May not be in token
+			userType: ctx.user.userType,
 		};
+
+		// If admin claims exist in token, include admin info
+		if (ctx.user.adminId) {
+			response.admin = {
+				id: ctx.user.adminId,
+				publicId: ctx.user.adminPublicId,
+				adminType: ctx.user.adminType,
+				permissions: ctx.user.permissions,
+			};
+		} else {
+			// Try to fetch from DB to get fresh admin info
+			const admin = await adminRepository.findAdminByUserId(ctx.user.id);
+			if (admin && admin.status === "ACTIVE") {
+				response.admin = {
+					id: admin.id,
+					publicId: admin.publicId,
+					adminType: admin.adminType,
+					status: admin.status,
+					permissions: admin.permissions,
+				};
+			}
+		}
+
+		return { user: response };
 	} catch (error) {
 		ctx.set.status = 401;
 		return { error: "Invalid token" };

@@ -6,6 +6,7 @@ import {
 } from "../../infrastructure/auth/jwt.provider";
 import * as authRepository from "./auth.repository";
 import * as walletRepository from "../wallet/wallet.repository";
+import * as adminRepository from "../admin/admin.repository";
 import bcrypt from "bcryptjs";
 
 const OTP_LENGTH = 6;
@@ -140,11 +141,25 @@ export const loginWithPasswordOtp = async (
 	// Validate and consume OTP
 	await validateOtpAndConsume(user.phoneNumber, otp);
 
-	// Generate tokens
-	const accessToken = signAccessToken({
+	// Check if user has admin record
+	const admin = await adminRepository.findAdminByUserId(user.id);
+
+	// Build JWT payload - include admin claims if admin exists
+	const tokenPayload: any = {
 		userId: user.id,
 		userType: user.userType,
-	});
+	};
+
+	// Add admin claims if admin record exists and is active
+	if (admin && admin.status === "ACTIVE") {
+		tokenPayload.adminId = admin.id;
+		tokenPayload.adminPublicId = admin.publicId;
+		tokenPayload.adminType = admin.adminType;
+		tokenPayload.permissions = admin.permissions;
+	}
+
+	// Generate tokens
+	const accessToken = signAccessToken(tokenPayload);
 	const refreshToken = signRefreshToken({ userId: user.id });
 
 	// Store refresh token
@@ -153,7 +168,8 @@ export const loginWithPasswordOtp = async (
 	const expiresAt = new Date(Date.now() + refreshExpiryMs);
 	await authRepository.createRefreshToken(refreshHash, expiresAt, user.id);
 
-	return {
+	// Build response - include admin info if present
+	const response: any = {
 		user: {
 			id: user.id,
 			phoneNumber: user.phoneNumber,
@@ -162,6 +178,19 @@ export const loginWithPasswordOtp = async (
 		accessToken,
 		refreshToken,
 	};
+
+	// Add admin info to response if admin exists
+	if (admin && admin.status === "ACTIVE") {
+		response.user.admin = {
+			id: admin.id,
+			publicId: admin.publicId,
+			adminType: admin.adminType,
+			status: admin.status,
+			permissions: admin.permissions,
+		};
+	}
+
+	return response;
 };
 
 export const refreshAccessToken = async (
