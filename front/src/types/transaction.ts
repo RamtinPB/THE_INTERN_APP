@@ -57,9 +57,9 @@ export interface TransactionsResponse {
 }
 
 export interface TransactionsFilters {
-	type?: TransactionType | "";
-	status?: TransactionStatus | "";
-	walletId?: number | "";
+	type?: TransactionType | "" | "all";
+	status?: TransactionStatus | "" | "all";
+	walletId?: number | "" | "all";
 	fromDate?: string;
 	toDate?: string;
 	search?: string;

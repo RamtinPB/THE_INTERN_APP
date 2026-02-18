@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -35,7 +35,14 @@ export function TransactionFilters({
 	const [localFilters, setLocalFilters] =
 		useState<TransactionsFilters>(filters);
 
+	// Sync localFilters when filters prop changes (e.g., when parent clears filters)
+	useEffect(() => {
+		setLocalFilters(filters);
+	}, [filters]);
+
 	const handleApply = () => {
+		// Pass filters to parent (including "all" values for display in ActiveFilters)
+		// The useTransactions hook will clean "all" values before sending to API
 		onApply(localFilters);
 	};
 
@@ -107,11 +114,16 @@ export function TransactionFilters({
 					<label className="text-sm font-medium mb-2 block">کیف پول</label>
 					<Select
 						dir="rtl"
-						value={localFilters.walletId?.toString() || ""}
+						value={
+							localFilters.walletId?.toString() ||
+							localFilters.walletId === "all"
+								? "all"
+								: ""
+						}
 						onValueChange={(value) =>
 							updateFilter(
 								"walletId",
-								value === "all" ? undefined : parseInt(value),
+								value === "all" ? "all" : parseInt(value),
 							)
 						}
 					>

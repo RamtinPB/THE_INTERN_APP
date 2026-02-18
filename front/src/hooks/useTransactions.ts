@@ -54,7 +54,15 @@ export function useTransactions(
 		setError(null);
 
 		try {
-			const response: TransactionsResponse = await getUserTransactions(filters);
+			// Clean filters before sending to API - remove "all" values
+			const cleanedFilters = { ...filters };
+			if (cleanedFilters.type === "all") cleanedFilters.type = undefined;
+			if (cleanedFilters.status === "all") cleanedFilters.status = undefined;
+			if (cleanedFilters.walletId === "all")
+				cleanedFilters.walletId = undefined;
+
+			const response: TransactionsResponse =
+				await getUserTransactions(cleanedFilters);
 			setTransactions(response.transactions);
 			setPagination(response.pagination);
 		} catch (err: any) {

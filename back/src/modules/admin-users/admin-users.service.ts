@@ -33,6 +33,7 @@ export const listUsers = async (params: {
 				publicId: true,
 				phoneNumber: true,
 				userType: true,
+				status: true,
 				createdAt: true,
 				updatedAt: true,
 			},
@@ -65,6 +66,7 @@ export const getUserById = async (id: number, adminPermissions: string[]) => {
 			publicId: true,
 			phoneNumber: true,
 			userType: true,
+			status: true,
 			createdAt: true,
 			updatedAt: true,
 		},
@@ -163,9 +165,11 @@ export const suspendUser = async (
 		throw new Error("Insufficient permissions");
 	}
 
-	// Note: User doesn't have a status field currently
-	// This would require adding a status field to User model
-	// For now, we'll just log the action
+	// Update user status in database
+	await prisma.user.update({
+		where: { id: userId },
+		data: { status: "SUSPENDED" },
+	});
 
 	await adminRepository.createAuditLog({
 		adminId,
@@ -188,6 +192,12 @@ export const unsuspendUser = async (
 	if (!hasPermission(adminPermissions, "users:suspend")) {
 		throw new Error("Insufficient permissions");
 	}
+
+	// Update user status in database
+	await prisma.user.update({
+		where: { id: userId },
+		data: { status: "ACTIVE" },
+	});
 
 	await adminRepository.createAuditLog({
 		adminId,

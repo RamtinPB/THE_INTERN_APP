@@ -23,6 +23,11 @@ enum UserType {
   // ADMIN // Deprecated - use separate Admin entity
 }
 
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
 // =============================================================================
 // ADMIN ENUMS
 // =============================================================================
@@ -59,7 +64,8 @@ model User {
   refreshTokens       RefreshToken[]
   revokedAccessTokens RevokedAccessToken[]
 
-  userType UserType @default(CUSTOMER)
+  userType UserType   @default(CUSTOMER)
+  status   UserStatus @default(ACTIVE)
 
   wallets        Wallet[]
   paymentIntents PaymentIntent[] // Future: for card/top-up payments
@@ -239,6 +245,7 @@ model Wallet {
   publicId  String   @unique @default(cuid())
   balance   Decimal  @db.Decimal(18, 2)
   primary   Boolean  @default(false)
+  frozen    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

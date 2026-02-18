@@ -62,10 +62,25 @@ export default function TransactionsPage() {
 		setFilters({ search: search || undefined });
 	};
 
-	// Handle apply filters
+	// Handle apply filters - keep "all" values for display in ActiveFilters
 	const handleApplyFilters = (newFilters: TransactionsFilters) => {
 		setFilters({ ...newFilters, page: 1 }); // Reset to page 1
 	};
+
+	// Clean filters before sending to API - convert "all" to undefined
+	const cleanFiltersForAPI = (
+		filtersToClean: TransactionsFilters,
+	): TransactionsFilters => {
+		const cleaned = { ...filtersToClean };
+		if (cleaned.type === "all") cleaned.type = undefined;
+		if (cleaned.status === "all") cleaned.status = undefined;
+		if (cleaned.walletId === "all") cleaned.walletId = undefined;
+		return cleaned;
+	};
+
+	// Get filters for API call (cleaned)
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const getAPIFilters = () => cleanFiltersForAPI(filters);
 
 	// Handle clear filters - reset to primary wallet
 	const handleClearFilters = () => {
@@ -90,8 +105,11 @@ export default function TransactionsPage() {
 		setSelectedTransaction(null);
 	};
 
-	// Get the current wallet being displayed
+	// Get the current wallet being displayed - handle "all" case
 	const getCurrentWallet = () => {
+		if (filters.walletId === "all") {
+			return null; // Showing all wallets
+		}
 		if (filters.walletId) {
 			return wallets.find((w) => w.id === filters.walletId);
 		}
@@ -100,10 +118,11 @@ export default function TransactionsPage() {
 
 	const currentWallet = getCurrentWallet();
 
-	// Current wallet ID for passing to components
-	const currentWalletId = filters.walletId
-		? Number(filters.walletId)
-		: undefined;
+	// Current wallet ID for passing to components - handle "all" case
+	const currentWalletId =
+		filters.walletId && filters.walletId !== "all"
+			? Number(filters.walletId)
+			: undefined;
 
 	return (
 		<>
@@ -148,28 +167,6 @@ export default function TransactionsPage() {
 						onRemove={() => {}}
 						onClearAll={handleClearFilters}
 					/>
-
-					{/* Wallet Badge - Shows which wallet's transactions are being displayed */}
-					{currentWallet && (
-						<div className="flex flex-wrap items-center gap-2">
-							<div className="flex items-center gap-1 bg-secondary text-secondary-foreground px-3 py-1.5 rounded-full text-sm">
-								<span>
-									کیف پول:{" "}
-									{currentWallet.name ||
-										`**** ${currentWallet.publicId.slice(-4)}`}
-									{currentWallet.primary && (
-										<Badge
-											variant="secondary"
-											className="bg-yellow-100 text-yellow-800 gap-1"
-										>
-											اصلی
-											<Star className="h-3 w-3 fill-yellow-500" />
-										</Badge>
-									)}
-								</span>
-							</div>
-						</div>
-					)}
 
 					{/* Error Message */}
 					{error && (

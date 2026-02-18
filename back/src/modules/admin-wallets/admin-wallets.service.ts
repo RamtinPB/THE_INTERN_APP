@@ -133,8 +133,12 @@ export const freezeWallet = async (
 		throw new Error("Insufficient permissions");
 	}
 
-	// Note: Need to add a frozen field to Wallet model
-	// For now, just log the action
+	// Update wallet frozen status in database
+	await prisma.wallet.update({
+		where: { id: walletId },
+		data: { frozen: true },
+	});
+
 	await adminRepository.createAuditLog({
 		adminId,
 		action: "WALLET_FROZEN",
@@ -156,6 +160,12 @@ export const unfreezeWallet = async (
 	if (!hasPermission(adminPermissions, "wallets:freeze")) {
 		throw new Error("Insufficient permissions");
 	}
+
+	// Update wallet frozen status in database
+	await prisma.wallet.update({
+		where: { id: walletId },
+		data: { frozen: false },
+	});
 
 	await adminRepository.createAuditLog({
 		adminId,
