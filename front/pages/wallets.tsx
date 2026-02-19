@@ -389,6 +389,11 @@ export default function WalletsPage() {
 			/>
 
 			<TransferModal
+				key={
+					isTransferOpen
+						? `transfer-${selectedWallet?.id || "new"}`
+						: "transfer-closed"
+				}
 				isOpen={isTransferOpen}
 				onClose={() => setIsTransferOpen(false)}
 				wallet={selectedWallet}

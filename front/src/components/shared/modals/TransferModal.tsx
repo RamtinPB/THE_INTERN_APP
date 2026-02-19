@@ -83,13 +83,47 @@ export function TransferModal({
 		}
 	}, [isOpen, wallet, wallets]); // Removed fromWalletId, toWalletId from deps
 
+	// Reset transfer mode and recipient when wallet changes while modal is open
+	// This fixes Issue #2: modal state persists between different wallets
+	useEffect(() => {
+		if (isOpen && wallet) {
+			setIsP2PMode(false);
+			setRecipientPublicId("");
+			setToWalletId("");
+		}
+	}, [isOpen, wallet?.id]);
+
+	// Auto-select destination wallet when switching from P2P to Own Wallet mode
+	// This fixes the bug where button becomes disabled when switching modes
+	useEffect(() => {
+		// Only run when transitioning from P2P to Own Wallet mode
+		if (!isP2PMode && fromWalletId) {
+			// Only auto-select if toWalletId is empty (was in P2P mode)
+			if (!toWalletId) {
+				const otherWallets = wallets.filter(
+					(w) => w.id.toString() !== fromWalletId,
+				);
+				if (otherWallets.length > 0) {
+					// Prefer primary if it's not the source, otherwise first available
+					const destWallet =
+						otherWallets.find((w) => w.primary) || otherWallets[0];
+					setToWalletId(destWallet.id.toString());
+				}
+			}
+		}
+	}, [isP2PMode, fromWalletId, toWalletId, wallets]);
+
 	// Get selected wallet
 	const fromWallet = wallets.find((w) => w.id.toString() === fromWalletId);
 
 	// Check if transfer amount is valid
 	const transferAmount = parseFloat(amount) || 0;
+	const hasValidAmount =
+		amount.trim() !== "" && !isNaN(transferAmount) && transferAmount > 0;
 	const canTransfer =
-		fromWallet && transferAmount <= parseFloat(fromWallet.balance);
+		fromWallet &&
+		hasValidAmount &&
+		transferAmount <= parseFloat(fromWallet.balance);
 
 	// Reset state when modal opens/closes
 	const handleOpenChange = (open: boolean) => {
@@ -349,6 +383,7 @@ export function TransferModal({
 								disabled={
 									isLoading ||
 									!fromWalletId ||
+									!hasValidAmount ||
 									(!isP2PMode && !toWalletId) ||
 									(isP2PMode && !recipientPublicId) ||
 									!canTransfer

@@ -60,10 +60,14 @@ export function WithdrawModal({
 		(w) => w.id.toString() === selectedWalletId,
 	);
 
-	// Check if withdrawal amount exceeds balance
+	// Check if withdrawal amount is valid
 	const withdrawalAmount = parseFloat(amount) || 0;
+	const hasValidAmount =
+		amount.trim() !== "" && !isNaN(withdrawalAmount) && withdrawalAmount > 0;
 	const canWithdraw =
-		selectedWallet && withdrawalAmount <= parseFloat(selectedWallet.balance);
+		selectedWallet &&
+		hasValidAmount &&
+		withdrawalAmount <= parseFloat(selectedWallet.balance);
 
 	// Reset state when modal opens/closes
 	const handleOpenChange = (open: boolean) => {
@@ -216,7 +220,12 @@ export function WithdrawModal({
 							</Button>
 							<Button
 								type="submit"
-								disabled={isLoading || !selectedWalletId || !canWithdraw}
+								disabled={
+									isLoading ||
+									!selectedWalletId ||
+									!hasValidAmount ||
+									!canWithdraw
+								}
 							>
 								{isLoading && <Loader2 className="h-4 w-4 ml-2 animate-spin" />}
 								تایید و برداشت

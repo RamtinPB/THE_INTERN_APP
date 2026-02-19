@@ -101,8 +101,10 @@ export function DepositModal({
 		(w) => w.id.toString() === selectedWalletId,
 	);
 
-	// Calculate deposit amount
+	// Calculate deposit amount and validation
 	const depositAmount = parseFloat(amount) || 0;
+	const hasValidAmount =
+		amount.trim() !== "" && !isNaN(depositAmount) && depositAmount > 0;
 
 	return (
 		<DirectionProvider dir="rtl">
@@ -191,7 +193,10 @@ export function DepositModal({
 							>
 								انصراف
 							</Button>
-							<Button type="submit" disabled={isLoading || !selectedWalletId}>
+							<Button
+								type="submit"
+								disabled={isLoading || !selectedWalletId || !hasValidAmount}
+							>
 								{isLoading && <Loader2 className="h-4 w-4 ml-2 animate-spin" />}
 								تایید و واریز
 							</Button>
